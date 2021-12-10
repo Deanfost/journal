@@ -4,8 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var signinRouter = require('./routes/signin');
-var signupRouter = require('./routes/signup');
+var usersRouter = require('./routes/users');
 
 var app = express();
 
@@ -18,7 +17,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', '/react-app', '/build')));
 
 app.use('/', indexRouter);
-app.use('/signin', signinRouter);
-app.use('/signup', signupRouter);
+app.use('/users', usersRouter);
 
 module.exports = app;
