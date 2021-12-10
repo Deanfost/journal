@@ -10,7 +10,7 @@ router.post('/signup', async function(req, res, next) {
     
 });
 
-/** GET a JWT for an existing user. */
+/** GET (generate) a JWT for an existing user. */
 router.get('/signin', async function(req, res, next) {
 
 });
