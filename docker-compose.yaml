@@ -1,0 +1,12 @@
+version: "3.1"
+
+services:
+  # The Postgres db
+  journal-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: 6N1L1#b1PvmM
+      POSTGRES_DB: main
+    ports:
+      - 5432:5432
