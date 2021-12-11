@@ -23,4 +23,13 @@ app.use('/users', usersRouter);
 app.use('/entries', entryRouter);
 app.use('/health', systemRouter);
 
+// Error handler for JWT
+app.use(function(err, req, res, next) {
+    if (err.name == 'UnauthorizedError') {
+        // Invalid JWT
+        return res.status(401).send('Invalid token');
+    }
+    next(err);
+});
+
 module.exports = app;
