@@ -101,7 +101,7 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('Cannot delete another user');
+                expect(res.text).to.deep.equal('Cannot delete a different user');
                 done();
             });
         });

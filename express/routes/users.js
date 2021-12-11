@@ -22,15 +22,18 @@ async function(req, res, next) {
     try {
         // Can only delete own user
         if (usernameJwt !== userToDelete) 
-            return res.status(403).send('Cannot delete another user');
+            return res.status(403).send('Cannot delete a different user');
 
-        // Check if the user exists
-        const user = await User.findByPk(usernameJwt);
-        if (!user) return res.status(404).send('User not found');
-        
-        // Delete the user
-        await user.destroy();
-        res.sendStatus(204);
+        // Start a transaction
+        await sequelize.transaction(async t => {
+            // Check if the user exists
+            const user = await User.findByPk(usernameJwt, {transaction: t});
+            if (!user) return res.status(404).send('User not found');
+            
+            // Delete the user
+            await user.destroy({transaction: t});
+            res.sendStatus(204);
+        });
     } catch (err) {
         next(err);
     }
