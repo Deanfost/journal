@@ -10,7 +10,7 @@ var systemRouter = require('./routes/system');
 
 var app = express();
 
-app.use(logger('dev'));
+app.use(logger('dev', {skip: (req, res) => process.env.NODE_ENV === 'test'}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -23,12 +23,13 @@ app.use('/users', usersRouter);
 app.use('/entries', entryRouter);
 app.use('/health', systemRouter);
 
-// Error handler for JWT
+// Catch a JWT verification error
 app.use(function(err, req, res, next) {
     if (err.name == 'UnauthorizedError') {
         // Invalid JWT
         return res.status(401).send('Invalid token');
     }
+    console.error(err);
     next(err);
 });
 

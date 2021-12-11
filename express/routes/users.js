@@ -17,20 +17,19 @@ handleValidationResult,
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
     // Delete the given user
-    const username = req.user['username'];
+    const usernameJwt = req.user['username'];
     const userToDelete = req.query.username;
     try {
         // Can only delete own user
-        if (username !== userToDelete) return res.sendStatus(403);
+        if (usernameJwt !== userToDelete) 
+            return res.status(403).send('Cannot delete another user');
 
         // Check if the user exists
-        const user = await User.findByPk(username);
+        const user = await User.findByPk(usernameJwt);
         if (!user) return res.status(404).send('User not found');
         
         // Delete the user
-        User.destroy({
-            where: {username}
-        });
+        await user.destroy();
         res.sendStatus(204);
     } catch (err) {
         next(err);
@@ -61,7 +60,7 @@ async function(req, res, next) {
     } catch (err) {
         // Catch unique violations
         if (err.name === "SequelizeUniqueConstraintError") {
-            res.status(409).send('User name already exists')
+            res.status(409).send('Username already exists')
             return;
         }
         next(err);
