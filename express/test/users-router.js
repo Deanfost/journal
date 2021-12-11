@@ -73,6 +73,7 @@ describe('Users Router', function() {
         it('should return 400 if missing query param', function(done) {
             chai.request(server)
             .del('/users')
+            .query({someotherparam: 'adl.jg'})
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
@@ -147,7 +148,17 @@ describe('Users Router', function() {
     });
 
     describe('POST /signup', function() {
+        it('should return 400 if missing any query params', function(done) {
 
+        });
+
+        it('should return 409 if duplicate username', function(done) {
+
+        });
+
+        it('should create the new user', function(done) {
+            // TODO also check returned jwt is signed with the correct username
+        });
     });   
 
     describe('GET /signin', function() {

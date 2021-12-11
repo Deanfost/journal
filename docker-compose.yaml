@@ -1,9 +1,9 @@
 version: "3.1"
 
-# Env vars provided in a .env file
+# Env vars provided in a root level .env file
 
 services:
-  # The Postgres db
+  # The Postgres db (a test db is setup as-needed by npm test)
   db:
     image: postgres
     environment:

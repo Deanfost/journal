@@ -12,7 +12,7 @@ const jwtSecret = process.env.JWT_SECRET;
 
 /** DELETE an existing user. */
 router.delete('/', 
-query('username').notEmpty().isString().trim().escape(),
+query('username').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
@@ -39,10 +39,10 @@ async function(req, res, next) {
     }
 });
 
-/** POST a new user and return a new JWT. */
+/** POST a new user and generate a new JWT. */
 router.post('/signup', 
-body('username').notEmpty().isString().trim().escape(),
-body('password').notEmpty().isString().trim().escape(),
+body('username').isString().bail().notEmpty().trim().escape(),
+body('password').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 async function(req, res, next) {
     // Create new user 
@@ -72,8 +72,8 @@ async function(req, res, next) {
 
 /** GET (generate) a JWT for an existing user. */
 router.get('/signin', 
-body('username').notEmpty().isString().trim().escape(),
-body('password').notEmpty().isString().trim().escape(),
+body('username').isString().bail().notEmpty().trim().escape(),
+body('password').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 async function(req, res, next) {
     // Generate a new JWT for a sign in
