@@ -1,3 +1,7 @@
+/**
+ * This file is used to configure Sequelize.
+ */
+
 // Env config
 const path = require('path');
 require('dotenv').config({

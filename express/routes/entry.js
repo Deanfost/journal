@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var validate = require('express-jwt');
 
 const { sequelize, User } = require('../models');
 const jwtSecret = process.env.JWT_SECRET;
