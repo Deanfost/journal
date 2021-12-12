@@ -27,18 +27,21 @@ router.delete('/',
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
     const usernameJwt = req.user['username'];
+    // Start a transaction
+    const t = await sequelize.transaction();
     try {
-        // Start a transaction
-        await sequelize.transaction(async t => {
-            // Check if the user exists
-            const user = await User.findByPk(usernameJwt, {transaction: t});
-            if (!user) return res.status(400).send('Current user does not exist');
-            
-            // Delete the user
-            await user.destroy({transaction: t});
-            res.sendStatus(204);
-        });
+        // Check if the user exists
+        const user = await User.findByPk(usernameJwt, {transaction: t});
+        if (!user) return res.status(400).send('Current user does not exist');
+        
+        // Delete the user
+        await user.destroy({transaction: t});
+
+        // Commit and send
+        await t.commit();
+        res.sendStatus(204);
     } catch (err) {
+        await t.rollback();
         next(err);
     }
 });
