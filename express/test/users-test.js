@@ -427,6 +427,41 @@ describe('Users Router', function() {
         });
     });  
 
+    describe('JWT Verification Util Handler', function() {
+        it('should return a 401 if the token has expired', function(done) {
+            const token = jwt.sign({
+                username: 'random user',
+                iat: Math.floor(new Date().getTime() / 1000) - 10
+            }, jwtSecret, {expiresIn: 0});
+            chai.request(server)
+            .del('/users')
+            .query({username: 'random user'})
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(401);
+                expect(res.text).to.deep.equal('Invalid token');
+                done();
+            });
+        });
+
+        it('should return 401 if the token has an invalid signature', function(done) {
+            const token = jwt.sign({username: 'random user'}, 'wrongsecret', {
+                expiresIn: Math.floor(new Date().getTime() / 1000) + 1000
+            });
+            chai.request(server)
+            .del('/users')
+            .query({username: 'dean1'})
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(401);
+                expect(res.text).to.deep.equal('Invalid token');
+                done();
+            });
+        });
+    });
+
     after(function() {
         // Close Postgres connection
         sequelize.close();

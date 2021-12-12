@@ -9,7 +9,7 @@ const { sequelize, User } = require('../models');
 const jwtSecret = process.env.JWT_SECRET;
 
 // Protect all endpoints in this router with JWT
-router.use(verifyJwt({secret: jwtSecret}));
+router.use(verifyJwt({secret: jwtSecret, algorithms: ['HS256']}));
 
 /** GET a list of entries for a user. */
 router.get('/', async function(req, res, next) {
