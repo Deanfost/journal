@@ -10,6 +10,18 @@ var router = express.Router();
 const { sequelize, User } = require('../models');
 const jwtSecret = process.env.JWT_SECRET;
 
+/** GET all user names. */
+router.get('/', async function(req, res, next) {
+    try {
+        const users = await User.findAll({
+            attributes: ['username']
+        });
+        res.send(users);
+    } catch(err) {
+        next(err);
+    }
+});
+
 /** DELETE an existing user. */
 router.delete('/', 
 query('username').isString().bail().notEmpty().trim().escape(),
@@ -93,18 +105,6 @@ async function(req, res, next) {
         });
         res.send(token);
     } catch (err) {
-        next(err);
-    }
-});
-
-/** GET all user names. */
-router.get('/', async function(req, res, next) {
-    try {
-        const users = await User.findAll({
-            attributes: ['username']
-        });
-        res.send(users);
-    } catch(err) {
         next(err);
     }
 });
