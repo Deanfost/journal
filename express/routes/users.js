@@ -70,8 +70,8 @@ async function(req, res, next) {
     }
 });
 
-/** GET (generate) a JWT for an existing user. */
-router.get('/signin', 
+/** POST (generate and return) a JWT for an existing user. */
+router.post('/signin', 
 body('username').isString().bail().notEmpty().trim().escape(),
 body('password').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
@@ -85,7 +85,7 @@ async function(req, res, next) {
         
         // Check password hash
         const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(403).send('Incorrect username or password');
+        if (!match) return res.status(403).send('Incorrect password');
         
         // Send new JWT
         const token = jwt.sign({username}, jwtSecret, {

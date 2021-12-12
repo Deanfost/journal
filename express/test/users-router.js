@@ -160,14 +160,14 @@ describe('Users Router', function() {
 
     describe('POST /signup', function() {
         it('should return 400 if missing any body params', function(done) {
-            var completed = 0;
+            var completed = 0, count = 3;
             chai.request(server)
             .post('/users/signup')
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 3) done();
+                if (completed == count) done();
             });
 
             chai.request(server)
@@ -177,7 +177,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 3) done();
+                if (completed == count) done();
             });
             
             chai.request(server)
@@ -187,12 +187,12 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 3) done();
+                if (completed == count) done();
             });
         });
 
         it('should return 400 if any body params are empty', function(done) {
-            var completed = 0;
+            var completed = 0, count = 4;
             chai.request(server)
             .post('/users/signup')
             .send({username: '', password: ''})
@@ -200,7 +200,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 4) done();
+                if (completed == count) done();
             });
 
             chai.request(server)
@@ -210,7 +210,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 4) done();
+                if (completed == count) done();
             });
 
             chai.request(server)
@@ -220,7 +220,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
                 completed += 1;
-                if (completed == 4) done();
+                if (completed == count) done();
             });
 
             chai.request(server)
@@ -230,7 +230,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(201);
                 completed += 1;
-                if (completed == 4) done();
+                if (completed == count) done();
             });
         });
 
@@ -304,8 +304,127 @@ describe('Users Router', function() {
         }); 
     });   
 
-    describe('GET /signin', function() {
-        // TODO make sure to check if the token is valid(signature, exp)
+    describe('POST /signin', function() {
+        var completed = 0, count = 3;
+        it('should return 400 if missing any body params', function(done) {
+            chai.request(server)
+            .post('/users/signin')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'adg'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+
+            chai.request(server)
+            .post('/users/signin')
+            .send({password: 'adg'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+        });
+
+        it('should return 400 if any body params are empty', function(done) {
+            var completed = 0, count = 3;
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: '', password: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'adg', password: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+            
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: '', password: 'adg'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == count) done();
+            });
+        });
+
+        it('should return 404 if user does not exist', function(done) {
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'i do not exist', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(404);
+                expect(res.text).to.deep.equal('User not found');
+                done();
+            });
+        });
+
+        it('should return 403 if incorrect combination', function(done) {
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'dean1', password: 'wrong password'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(403);
+                expect(res.text).to.deep.equal('Incorrect password');
+                done();
+            });
+        });
+
+        it('should return a valid JWT for the correct user', function(done) {
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'dean1', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                try {
+                    const payload = jwt.verify(res.text, jwtSecret);
+                    expect(payload.username).to.deep.equal('dean1');
+                    done();
+                } catch (err) {
+                    done('JWT verification failed');
+                }
+            });
+        });
+
+        it('should return a JWT that expires at the correct time', function(done) {
+            const timestamp = Math.floor(new Date().getTime() / 1000);
+            const projectedExp = timestamp + process.env.JWT_DELTA_MINUTES * 60;
+            chai.request(server)
+            .post('/users/signin')
+            .send({username: 'dean1', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                const exp = jwt.verify(res.text, jwtSecret).exp;
+                expect(exp >= projectedExp && exp <= projectedExp + 1).to.be.true;
+                done();
+            });
+        });
     });  
 
     after(function() {
