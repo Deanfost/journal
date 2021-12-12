@@ -81,6 +81,17 @@ describe('Users Router', function() {
             });
         });
 
+        it('should return 400 if query param is empty', function(done) {
+            chai.request(server)
+            .del('/users')
+            .query({username: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
         it('should return 401 if not authenticated with JWT', function(done) {
             chai.request(server)
             .del('/users')
@@ -148,21 +159,153 @@ describe('Users Router', function() {
     });
 
     describe('POST /signup', function() {
-        it('should return 400 if missing any query params', function(done) {
+        it('should return 400 if missing any body params', function(done) {
+            var completed = 0;
+            chai.request(server)
+            .post('/users/signup')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 3) done();
+            });
 
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'adg'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 3) done();
+            });
+            
+            chai.request(server)
+            .post('/users/signup')
+            .send({password: 'adga'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 3) done();
+            });
+        });
+
+        it('should return 400 if any body params are empty', function(done) {
+            var completed = 0;
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: '', password: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 4) done();
+            });
+
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'adgsa', password: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 4) done();
+            });
+
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: '', password: 'adga'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                completed += 1;
+                if (completed == 4) done();
+            });
+
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'adg', password: 'adga'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(201);
+                completed += 1;
+                if (completed == 4) done();
+            });
         });
 
         it('should return 409 if duplicate username', function(done) {
-
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'dean1', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(409);
+                expect(res.text).to.deep.equal('Username already exists');
+                done();
+            });
         });
 
         it('should create the new user', function(done) {
-            // TODO also check returned jwt is signed with the correct username
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'not dean', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(201);
+                
+                chai.request(server)
+                .get('/users')
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.deep.equal([
+                        {username: 'dean1'},
+                        {username: 'dean2'},
+                        {username: 'dean3'},
+                        {username: 'dean4'},
+                        {username: 'not dean'}
+                    ]);
+                    done();
+                });
+            });
         });
+
+        it('should return a valid JWT for the correct user', function(done) {
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'not dean', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(201);
+                try {
+                    const payload = jwt.verify(res.text, jwtSecret);
+                    expect(payload.username).to.deep.equal('not dean');
+                    done();
+                } catch (err) {
+                    done('JWT verification failed');
+                }
+            });
+        });
+
+        it('should return a JWT that expires at the correct time', function(done) {
+            const timestamp = Math.floor(new Date().getTime() / 1000);
+            const projectedExp = timestamp + process.env.JWT_DELTA_MINUTES * 60;
+            chai.request(server)
+            .post('/users/signup')
+            .send({username: 'not dean', password: '1234'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(201);
+                const exp = jwt.verify(res.text, jwtSecret).exp;
+                expect(exp >= projectedExp && exp <= projectedExp + 1).to.be.true;
+                done();
+            });
+        }); 
     });   
 
     describe('GET /signin', function() {
-
+        // TODO make sure to check if the token is valid(signature, exp)
     });  
 
     after(function() {
