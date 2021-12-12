@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ User }) {
       // define association here
-      this.belongsTo(User, {foreignKey: 'username'});
+      this.belongsTo(User, {foreignKey: 'username', onDelete: 'CASCADE'});
     }
   };
   Note.init({

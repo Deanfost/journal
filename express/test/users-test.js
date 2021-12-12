@@ -70,28 +70,6 @@ describe('Users Router', function() {
     });  
 
     describe('DELETE /', function() {
-        it('should return 400 if missing query param', function(done) {
-            chai.request(server)
-            .del('/users')
-            .query({someotherparam: 'adl.jg'})
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(400);
-                done();
-            });
-        });
-
-        it('should return 400 if query param is empty', function(done) {
-            chai.request(server)
-            .del('/users')
-            .query({username: ''})
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(400);
-                done();
-            });
-        });
-
         it('should return 401 if not authenticated with JWT', function(done) {
             chai.request(server)
             .del('/users')
@@ -100,20 +78,6 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
                 expect(res.text).to.deep.equal('Invalid token');
-                done();
-            });
-        });
-
-        it('should return 403 if not own user', function(done) {
-            const token = jwt.sign({username:'dean1'}, jwtSecret);
-            chai.request(server)
-            .del('/users')
-            .query({username:'dean2'})
-            .set('Authorization', 'Bearer ' + token)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('Cannot delete a different user');
                 done();
             });
         });

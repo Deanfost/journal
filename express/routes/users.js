@@ -1,6 +1,6 @@
 var express = require('express');
 var bcrypt = require('bcrypt');
-var { body, query } = require('express-validator');
+var { body } = require('express-validator');
 var jwt = require('jsonwebtoken');
 var verifyJwt = require('express-jwt');
 var { handleValidationResult } = require('../util');
@@ -22,19 +22,12 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-/** DELETE an existing user. */
+/** DELETE own account and all its content. */
 router.delete('/', 
-query('username').isString().bail().notEmpty().trim().escape(),
-handleValidationResult,
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
     const usernameJwt = req.user['username'];
-    const userToDelete = req.query.username;
     try {
-        // Can only delete own user
-        if (usernameJwt !== userToDelete) 
-            return res.status(403).send('Cannot delete a different user');
-
         // Start a transaction
         await sequelize.transaction(async t => {
             // Check if the user exists
