@@ -28,7 +28,6 @@ query('username').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
-    // Delete the given user
     const usernameJwt = req.user['username'];
     const userToDelete = req.query.username;
     try {
@@ -40,7 +39,7 @@ async function(req, res, next) {
         await sequelize.transaction(async t => {
             // Check if the user exists
             const user = await User.findByPk(usernameJwt, {transaction: t});
-            if (!user) return res.status(404).send('User not found');
+            if (!user) return res.status(400).send('Current user does not exist');
             
             // Delete the user
             await user.destroy({transaction: t});
@@ -57,7 +56,6 @@ body('username').isString().bail().notEmpty().trim().escape(),
 body('password').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 async function(req, res, next) {
-    // Create new user 
     const { username, password } = req.body;
     try {
         // Hash password
@@ -88,7 +86,6 @@ body('username').isString().bail().notEmpty().trim().escape(),
 body('password').isString().bail().notEmpty().trim().escape(),
 handleValidationResult,
 async function(req, res, next) {
-    // Generate a new JWT for a sign in
     const { username, password } = req.body;
     try {
         // Get the user info

@@ -13,7 +13,7 @@ describe('Users Router', function() {
     beforeEach(async function() {
         // Reset table state before each test
         await User.destroy({
-            truncate: true
+            truncate: {cascade: true}
         });
 
         var salt = await bcrypt.genSalt();
@@ -52,7 +52,7 @@ describe('Users Router', function() {
 
         it('should get no usernames', function(done) {
             User.destroy({
-                truncate: true
+                truncate: {cascade: true}
             }).then(() => {
                 chai.request(server)
                 .get('/users')
@@ -118,7 +118,7 @@ describe('Users Router', function() {
             });
         });
 
-        it('should return 404 if no user found', function(done) {
+        it('should return 400 if current user not found', function(done) {
             const token = jwt.sign({username:'i do not exist'}, jwtSecret);
             chai.request(server)
             .del('/users')
@@ -126,8 +126,8 @@ describe('Users Router', function() {
             .set('Authorization', 'Bearer ' + token)
             .end((err, res) => {
                 expect(err).to.be.null;
-                expect(res).to.have.status(404);
-                expect(res.text).to.deep.equal('User not found');
+                expect(res).to.have.status(400);
+                expect(res.text).to.deep.equal('Current user does not exist');
                 done();
             });
         });
