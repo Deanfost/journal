@@ -73,7 +73,7 @@ async function(req, res, next) {
 
 /** GET an existing entry's content. */
 router.get('/:entryid', 
-param('entryid').isNumeric().bail().notEmpty(),
+param('entryid').isNumeric(),
 handleValidationResult,
 async function(req, res, next) {
     const usernameJwt = req.user['username'];
@@ -105,7 +105,7 @@ async function(req, res, next) {
 
 /** PUT (replace with a new version) an existing entry. */
 router.put('/:entryid', 
-param('entryid').isNumeric().bail().notEmpty(),
+param('entryid').isNumeric(),
 body('newContent').isString().bail().escape(),
 handleValidationResult,
 async function(req, res, next) {
@@ -120,8 +120,11 @@ async function(req, res, next) {
 
         // Get entry
         const entry = await Note.findByPk(entryid, {transaction: t});
+        if (!entry) return res.status(404).send('Entry does not exist');
 
         // Check access to entry
+        // (We do this instead of querying the Notes association so a row
+        // showing up missing above is not confused for having no access to it)
         if (entry.username !== usernameJwt) 
             return res.status(403).send('You do not have access to this entry');
 
@@ -139,8 +142,38 @@ async function(req, res, next) {
 });
 
 /** DELETE an entry. */
-router.delete('/:entryid', async function(req, res, next) {
-    res.status(501).send('Unimplemented');
+router.delete('/:entryid', 
+param('entryid').isNumeric(),
+handleValidationResult,
+async function(req, res, next) {
+    const usernameJwt = req.user['username'];
+    const entryid = req.params.entryid;
+    const t = await sequelize.transaction();
+    try {
+        // Check user exists
+        const user = await User.findByPk(usernameJwt, {transaction: t});
+        if (!user) return res.status(400).send('Current user does not exist');
+
+        // Get entry
+        const entry = await Note.findByPk(entryid, {transaction: t});
+        if (!entry) return res.status(404).send('Entry does not exist');
+
+        // Check access to entry
+        // (We do this instead of querying the Notes association so a row
+        // showing up missing above is not confused for having no access to it)
+        if (entry.username !== usernameJwt) 
+            return res.status(403).send('You do not have access to this entry');
+
+        // Delete the journal entry
+        await entry.destroy({transaction: t});
+
+        // Commit and send
+        await t.commit();
+        res.sendStatus(204);
+    } catch (err) {
+        await t.rollback();
+        next(err);
+    }
 });
 
 module.exports = router;
