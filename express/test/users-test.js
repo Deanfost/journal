@@ -18,19 +18,19 @@ describe('Users Router', function() {
 
         var salt = await bcrypt.genSalt();
         var digest = await bcrypt.hash('1234', salt);
-        User.create({username: 'dean1', password: digest});
+        await User.create({username: 'dean1', password: digest});
 
         salt = await bcrypt.genSalt();
         digest = await bcrypt.hash('12', salt);
-        User.create({username: 'dean2', password: digest});
+        await User.create({username: 'dean2', password: digest});
 
         salt = await bcrypt.genSalt();
         digest = await bcrypt.hash('34', salt);
-        User.create({username: 'dean3', password: digest});
+        await User.create({username: 'dean3', password: digest});
 
         salt = await bcrypt.genSalt();
         digest = await bcrypt.hash('14', salt);
-        User.create({username: 'dean4', password: digest});
+        await User.create({username: 'dean4', password: digest});
     });
 
     describe('GET /', function() {
@@ -426,8 +426,8 @@ describe('Users Router', function() {
         });
     });
 
-    after(function() {
+    after(async function() {
         // Close Postgres connection
-        sequelize.close();
+        await sequelize.close();
     });
 });
