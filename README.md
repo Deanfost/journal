@@ -23,5 +23,11 @@ To start the React development server on localhost:3000, run `npm start` in `/re
 Ensure that Docker and Docker Compose are installed on your machine. Run `docker compose up` in the root of the project to start the container on localhost:5432.
 
 ## Tests
+The backend includes both load test and unit test suites. 
+
+### Unit Tests
 To test the backend, run `npm test` within `/express`. All tests take place on db "db_test".
+
+### Load Tests
+Load testing utilizes the Artillery package. First install artillery globally with `npm i -g artillery`. Then run a test suite in `/express/test` with `artillery run path/to/script.yml`. 
 

@@ -1,0 +1,11 @@
+config: 
+  target: "http://localhost:5000"
+  phases:
+  - duration: 30
+    arrivalRate: 10
+
+scenarios: 
+  - name: "List usernames"
+    flow: 
+      - get:
+          url: "/users"
