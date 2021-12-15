@@ -7,6 +7,7 @@ async function formatDBs() {
         await sequelize.queryInterface.dropAllTables();
         await sequelize.sync();
         console.log(`Successfully formatted '${sequelize.config.database}' database`);
+        await sequelize.close();
         exit(0);
     } catch (err) {
         console.error(err);

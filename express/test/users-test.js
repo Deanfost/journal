@@ -41,10 +41,7 @@ describe('Users Router', function() {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
                 expect(res.body).to.deep.equal([
-                    {username: 'dean1'},
-                    {username: 'dean2'},
-                    {username: 'dean3'},
-                    {username: 'dean4'}
+                    'dean1', 'dean2', 'dean3', 'dean4'
                 ]);
                 done();
             });
@@ -112,9 +109,7 @@ describe('Users Router', function() {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
                     expect(res.body).to.deep.equal([
-                        {username: 'dean2'},
-                        {username: 'dean3'},
-                        {username: 'dean4'}
+                        'dean2', 'dean3', 'dean4'
                     ]);
                     done();
                 });
@@ -224,11 +219,7 @@ describe('Users Router', function() {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
                     expect(res.body).to.deep.equal([
-                        {username: 'dean1'},
-                        {username: 'dean2'},
-                        {username: 'dean3'},
-                        {username: 'dean4'},
-                        {username: 'not dean'}
+                        'dean1', 'dean2', 'dean3', 'dean4', 'not dean'
                     ]);
                     done();
                 });
@@ -426,8 +417,8 @@ describe('Users Router', function() {
         });
     });
 
-    after(async function() {
+    after(function() {
         // Close Postgres connection
-        await sequelize.close();
+        sequelize.close();
     });
 });

@@ -16,7 +16,7 @@ router.get('/', async function(req, res, next) {
         const users = await User.findAll({
             attributes: ['username']
         });
-        res.send(users);
+        res.send(users.map(u => u.username));
     } catch(err) {
         next(err);
     }

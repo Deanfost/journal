@@ -1,5 +1,5 @@
 var { validationResult } = require('express-validator');
-const { User } = require('./models');
+var bcrypt = require('bcrypt');
 
 function handleValidationResult(req, res, next) {
     // Validate body
@@ -10,4 +10,24 @@ function handleValidationResult(req, res, next) {
     next();
 };
 
-module.exports = { handleValidationResult };
+/**
+ * Not safe DO NOT use for security purposes
+ */
+function makeString(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+async function hashPassword(pass) {
+    var salt = await bcrypt.genSalt();
+    var digest = await bcrypt.hash(pass, salt);
+    return digest;
+}
+
+module.exports = { handleValidationResult, hashPassword, makeString };
