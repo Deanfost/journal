@@ -417,8 +417,8 @@ describe('Users Router', function() {
         });
     });
 
-    after(function() {
+    after(async function() {
         // Close Postgres connection
-        sequelize.close();
+        await sequelize.close();
     });
 });

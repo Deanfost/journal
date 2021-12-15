@@ -32,7 +32,10 @@ async function(req, res, next) {
     try {
         // Check if the user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
-        if (!user) return res.status(400).send('Current user does not exist');
+        if (!user) {
+            await t.rollback();
+            return res.status(400).send('Current user does not exist');
+        }
         
         // Delete the user
         await user.destroy({transaction: t});
