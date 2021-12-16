@@ -1,0 +1,18 @@
+Example - How long will a test run for?​
+
+Let's look at an example. Imagine we define a test with a single load phase which lasts five seconds and creates one virtual user every second (so a total of fives virtual users will be created). The test definition contains a single scenario, which sends two HTTP requests one after another.
+
+How long will that test take to run?
+
+The answer is "it depends", with a couple of factors that need to be considered:
+
+How quickly the target service can respond to each request, which will vary for different kinds of requests (e.g. a GET request that returns a cached value vs a POST that creates a new record in a database)
+How quickly the service will actually respond to requests. The response time from the service will likely change as more load is placed on the it, i.e. it will probably get slower at some point
+Network latency and performance which can add some overhead to how long a request takes to be completed, before the virtual user moves on to the next one
+The number of steps in the scenario
+Imagine that each HTTP request takes exactly 60 seconds. The total running time of the test is going to be:
+
+5 seconds during which virtual users will be created
+each virtual user will make two HTTP requests, and the total duration of the session for each VU will be 60 * 2 = 120 seconds
+the last VU is going be created at second 5 of the test run, and will take 120 seconds to complete its scenario
+hence the total running time of the test run is going to be 5 + 120 = 125 seconds
