@@ -82,7 +82,7 @@ describe.only('Entries Router', function() {
             });
         });
 
-        it('should return 400 if current user not found', function(done) {
+        it('should return 400 if current user does not exist', function(done) {
             const token = jwt.sign({username:'i do not exist'}, jwtSecret);
             chai.request(server)
             .get('/entries')
@@ -228,6 +228,7 @@ describe.only('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
+                expect(res.text).to.deep.equal('Current user does not exist');
                 done();
             });
         });
@@ -270,8 +271,88 @@ describe.only('Entries Router', function() {
         });
     });
 
-    describe.skip('GET /:entryid', function() {
+    describe('GET /:entryid', function() {
+        it('should return 401 if not authenticated with JWT', function(done) {
+            chai.request(server)
+            .get('/entries/1')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(401);
+                expect(res.text).to.deep.equal('Invalid token');
+                done();
+            });
+        });
 
+        it('should return 400 if route param is not numeric', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .get('/entries/hello')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
+        it('should return 400 if current user does not exist', function(done){
+            const token = jwt.sign({username:'i do not exist'}, jwtSecret);
+            chai.request(server)
+            .get('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                expect(res.text).to.deep.equal('Current user does not exist');
+                done();
+            });
+        });
+
+        it('should return 404 if the entry does not exist', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .get('/entries/100')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(404);
+                expect(res.text).to.deep.equal('Entry does not exist');
+                done();
+            });
+        });
+
+        it('should return 403 if user does not own the note', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .get('/entries/3')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(403);
+                expect(res.text).to.deep.equal('You do not have access to this entry');
+                done();
+            });
+        });
+
+        it('should return the note', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .get('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                expect(res.body).to.matchPattern({
+                    id: 1,
+                    title: 'dean1 note 1',
+                    content: 'This is content',
+                    updatedAt: lm.isString,
+                    createdAt: lm.isString,
+                    username: 'dean1'
+                });
+                done();
+            });
+        });
     });
 
     describe.skip('PUT /:entryid', function() {
