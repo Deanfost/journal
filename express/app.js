@@ -15,8 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Static folder - react-app/build
-app.use(express.static(path.join(__dirname, '..', '/react-app', '/build')));
+// Static folder -- update this to serve a front end ---
+// app.use(express.static(path.join(__dirname, '..', '/react-app', '/build')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
