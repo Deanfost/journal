@@ -9,7 +9,7 @@ var server = require('../app');
 
 chai.use(chaiHttp);
 
-describe.only('Entries Router', function() {
+describe('Entries Router', function() {
     const date = '2021-03-14';
     beforeEach(async function() {
         // Reset table state before each test
@@ -145,9 +145,5 @@ describe.only('Entries Router', function() {
 
     describe.skip('DELETE /:entryid', function() {
 
-    });
-
-    after(async function() {
-        await sequelize.close();
     });
 });

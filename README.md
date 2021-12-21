@@ -27,5 +27,5 @@ The backend includes both load test and unit test suites.
 To test the backend, run `npm test` within `/express`. All tests take place on db "db_test".
 
 ### Load Tests (for fun)
-Load testing utilizes the Artillery package. First install artillery globally with `npm i -g artillery`. Then run a test suite in `/express/test` with `artillery run path/to/script.yml`. 
+Load testing utilizes the Artillery package. First install artillery globally with `npm i -g artillery`. Then run a test suite in `/express/test/artillery` with `artillery run path/to/script.yml`. 
 

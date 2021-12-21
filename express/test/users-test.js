@@ -1,4 +1,4 @@
-var { sequelize, User } = require('../models');
+var { sequelize, User, Note } = require('../models');
 var jwt = require('jsonwebtoken');
 var jwtSecret = process.env.JWT_SECRET;
 var chai = require('chai');
@@ -93,27 +93,52 @@ describe('Users Router', function() {
             });
         });
 
-        it('should delete the correct user', function(done) {
-            const token = jwt.sign({username:'dean1'}, jwtSecret);
-            chai.request(server)
-            .del('/users')
-            .query({username: 'dean1'})
-            .set('Authorization', 'Bearer ' + token)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(204);
-
+        it('should delete the correct user and their entries', function(done) {
+            const date = '2021-03-14';
+            sequelize.queryInterface.bulkInsert('Notes', [
+                {
+                    title: 'dean1 note 1', 
+                    content: 'This is content', 
+                    createdAt: date, 
+                    updatedAt: date, 
+                    username: 'dean1'
+                },
+                {
+                    title: 'dean1 note 2', 
+                    content: '', 
+                    createdAt: date, 
+                    updatedAt: date, 
+                    username: 'dean1'
+                }
+            ]).then(_ => {
+                const token = jwt.sign({username:'dean1'}, jwtSecret);
                 chai.request(server)
-                .get('/users')
+                .del('/users')
+                .query({username: 'dean1'})
+                .set('Authorization', 'Bearer ' + token)
                 .end((err, res) => {
                     expect(err).to.be.null;
-                    expect(res).to.have.status(200);
-                    expect(res.body).to.deep.equal([
-                        'dean2', 'dean3', 'dean4'
-                    ]);
-                    done();
+                    expect(res).to.have.status(204);
+    
+                    chai.request(server)
+                    .get('/users')
+                    .end((err, res) => {
+                        expect(err).to.be.null;
+                        expect(res).to.have.status(200);
+                        expect(res.body).to.deep.equal([
+                            'dean2', 'dean3', 'dean4'
+                        ]);
+                        Note.findAll({
+                            where: {
+                                username: 'dean1'
+                            }
+                        }).then(r => {
+                            expect(r).to.be.empty;
+                            done();
+                        }).catch(done);
+                    });
                 });
-            });
+            }).catch(done);
         }); 
     });
 
@@ -415,10 +440,5 @@ describe('Users Router', function() {
                 done();
             });
         });
-    });
-
-    after(async function() {
-        // Close Postgres connection
-        await sequelize.close();
     });
 });
