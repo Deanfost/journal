@@ -1,10 +1,8 @@
 # journal
 A simple journalling REST API.
 
-All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level `.env` file.
-
-## Starting the Backend
-To set up the Express backend, run `npm i` in `/express`. To start the Express backend on localhost:5050, run `npm start`.
+## Backend
+To set up the Express backend, run `npm i` in `/express`. To start the Express backend on localhost:5050, run `npm start`. 
 
 ### DB Management Commands
 Within the `/express` dir:
@@ -13,6 +11,18 @@ Within the `/express` dir:
 - Seed sample data: `npm run seed_db` 
 
 Note: the seed command will not reset auto-incrementing columns
+
+### Env Vars
+All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level `.env` file. Environment variables:
+- `POSTGRES_USER`- initialize the Postgres container's user account
+- `POSTGRES_PASSWORD` - initialize the Postgres container's password
+- `POSTGRES_URI` - useful for connecting to the container with the PSQL shell (not required)
+- `JWT_SECRET` - used to sign JWTs
+- `JWT_DELTA_MINUTES` - set JWT expiration delta
+
+Notes: 
+- Changing the first two Postgres env vars will require the container to be re-created (`docker compose down` then `docker compose up` again)
+- Example URI where POSTGRES_USER=main and POSTGRES_PASSWORD=aabbccdd1: 'postgresql://main:aabbccdd1@localhost:5432/db'
 
 ## Serving a Frontend
 The backend is capable of serving a production build of a frontend. To serve it, modify the `express.static()` call in `express/app.js` to point to your production build folder. In addition, ensure that `res.render()` within `/express/routes/index.js` points to the entry point of your build (check your framework's documentation). It will then be served on `localhost:5050/`.
