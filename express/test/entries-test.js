@@ -12,7 +12,7 @@ var lm = chaiMatchPattern.getLodashModule();
 chai.use(chaiHttp);
 chai.use(chaiMatchPattern);
 
-describe.only('Entries Router', function() {
+describe('Entries Router', function() {
     const date = '2021-03-14';
     beforeEach(async function() {
         // Reset table state before each test
@@ -391,12 +391,25 @@ describe.only('Entries Router', function() {
             });
         });
 
+        it('should return 400 if required body params are empty', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .send({title: '', newContent: 'adg'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
         it('should return 400 if the current user does not exist', function(done) {
             const token = jwt.sign({username:'i do not exist'}, jwtSecret);
             chai.request(server)
             .put('/entries/1')
             .set('Authorization', 'Bearer ' + token)
-            .send({newContent: ''})
+            .send({newTitle: 'dean1 note 1', newContent: ''})
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
@@ -410,7 +423,7 @@ describe.only('Entries Router', function() {
             chai.request(server)
             .put('/entries/100')
             .set('Authorization', 'Bearer ' + token)
-            .send({newContent: ''})
+            .send({newTitle: 'dean1 note 1', newContent: ''})
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(404);
@@ -424,7 +437,7 @@ describe.only('Entries Router', function() {
             chai.request(server)
             .put('/entries/3')
             .set('Authorization', 'Bearer ' + token)
-            .send({newContent: ''})
+            .send({newTitle: 'dean1 note 1', newContent: ''})
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
@@ -433,18 +446,18 @@ describe.only('Entries Router', function() {
             });
         });
 
-        it('should set the note content', function(done) {
+        it('should set the note title and content', function(done) {
             const token = jwt.sign({username:'dean1'}, jwtSecret);
             chai.request(server)
             .put('/entries/1')
             .set('Authorization', 'Bearer ' + token)
-            .send({newContent: 'THIS IS AN UPDATE'})
+            .send({newTitle: 'DEAN1 NEW TITLE', newContent: 'THIS IS AN UPDATE'})
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
                 expect(res.body).to.matchPattern({
                     id: 1,
-                    title: 'dean1 note 1', 
+                    title: 'DEAN1 NEW TITLE', 
                     content: 'THIS IS AN UPDATE',
                     username: 'dean1',
                     updatedAt: lm.isString,
@@ -459,7 +472,7 @@ describe.only('Entries Router', function() {
                     expect(res).to.have.status(200);
                     expect(res.body).to.matchPattern({
                         id: 1,
-                        title: 'dean1 note 1', 
+                        title: 'DEAN1 NEW TITLE', 
                         content: 'THIS IS AN UPDATE',
                         username: 'dean1',
                         updatedAt: lm.isString,
@@ -468,14 +481,6 @@ describe.only('Entries Router', function() {
                     done();
                 });
             });
-        });
-
-        it.skip('should set the note title', function(done) {
-
-        });
-
-        it.skip('should set both the note content and title', function(done) {
-
         });
     });
 

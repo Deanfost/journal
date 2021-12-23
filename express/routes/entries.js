@@ -120,11 +120,13 @@ async function(req, res, next) {
 /** PUT (replace with a new version) an existing entry. */
 router.put('/:entryid', 
 param('entryid').isNumeric(),
+body('newTitle').isString().bail().escape(),
 body('newContent').isString().bail().escape(),
 handleValidationResult,
 async function(req, res, next) {
     const usernameJwt = req.user['username'];
     const entryid = req.params.entryid;
+    const newTitle = req.body.newTitle;
     const newContent = req.body.newContent;
     const t = await sequelize.transaction();
     try {
@@ -151,6 +153,7 @@ async function(req, res, next) {
         }
 
         // Update the journal entry
+        entry.title = newTitle;
         entry.content = newContent;
         await entry.save();
 
