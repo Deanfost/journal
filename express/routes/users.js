@@ -10,7 +10,23 @@ var router = express.Router();
 const { sequelize, User } = require('../models');
 const jwtSecret = process.env.JWT_SECRET;
 
-/** GET all user names. */
+/**
+ * @swagger
+ * /users/:
+ *  get: 
+ *    summary: Get a list of registered usernames
+ *    tags: 
+ *      - users
+ *    responses: 
+ *      200: 
+ *        description: A successful response
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              type: array
+ *              items: 
+ *                type: string  
+ */
 router.get('/', async function(req, res, next) {
     try {
         const users = await User.findAll({
@@ -22,7 +38,23 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-/** DELETE own account and all its content. */
+/**
+ * @swagger
+ * /users/:
+ *  delete: 
+ *    summary: Delete the signed-in user and all their data
+ *    tags: 
+ *      - users
+ *    security: 
+ *      - bearerAuth: []
+ *    responses: 
+ *      204: 
+ *        description: The user and their data have been deleted
+ *      200: 
+ *        description: The signed-in user does not exist 
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ */
 router.delete('/', 
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
 async function(req, res, next) {
