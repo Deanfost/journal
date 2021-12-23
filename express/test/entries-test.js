@@ -355,8 +355,128 @@ describe.only('Entries Router', function() {
         });
     });
 
-    describe.skip('PUT /:entryid', function() {
+    describe('PUT /:entryid', function() {
+        it('should return 401 if not authenticated with JWT', function(done) {
+            chai.request(server)
+            .put('/entries/1')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(401);
+                expect(res.text).to.deep.equal('Invalid token');
+                done();
+            });
+        });
 
+        it('should return 400 if route param is not numeric', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/hello')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
+        it('should return 400 if missing body params', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
+        it('should return 400 if the current user does not exist', function(done) {
+            const token = jwt.sign({username:'i do not exist'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                expect(res.text).to.deep.equal('Current user does not exist');
+                done();
+            });
+        });
+
+        it('should return 404 if the entry to modify does not exist', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/100')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(404);
+                expect(res.text).to.deep.equal('Entry does not exist');
+                done();
+            });
+        });
+
+        it('should return 403 if user does not own the note', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/3')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(403);
+                expect(res.text).to.deep.equal('You do not have access to this entry');
+                done();
+            });
+        });
+
+        it('should set the note content', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .put('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newContent: 'THIS IS AN UPDATE'})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                expect(res.body).to.matchPattern({
+                    id: 1,
+                    title: 'dean1 note 1', 
+                    content: 'THIS IS AN UPDATE',
+                    username: 'dean1',
+                    updatedAt: lm.isString,
+                    createdAt: lm.isString
+                });
+
+                chai.request(server)
+                .get('/entries/1')
+                .set('Authorization', 'Bearer ' + token)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.matchPattern({
+                        id: 1,
+                        title: 'dean1 note 1', 
+                        content: 'THIS IS AN UPDATE',
+                        username: 'dean1',
+                        updatedAt: lm.isString,
+                        createdAt: lm.isString
+                    });
+                    done();
+                });
+            });
+        });
+
+        it.skip('should set the note title', function(done) {
+
+        });
+
+        it.skip('should set both the note content and title', function(done) {
+
+        });
     });
 
     describe.skip('DELETE /:entryid', function() {
