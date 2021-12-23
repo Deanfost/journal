@@ -30,6 +30,8 @@ The backend is capable of serving a production build of a frontend. To serve it,
 ## Starting Up the Postgres Container
 Ensure that Docker and Docker Compose are installed on your machine. Run `docker compose up` in the root of the project to start the container on localhost:5432.
 
+On first start, run the first db management command above to initialize the main db for use with the API.
+
 ## Tests
 The backend includes both load test and unit test suites. 
 
