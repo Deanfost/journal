@@ -484,7 +484,102 @@ describe('Entries Router', function() {
         });
     });
 
-    describe.skip('DELETE /:entryid', function() {
+    describe('DELETE /:entryid', function() {
+        it('should return 401 if not authenticated with JWT', function(done) {
+            chai.request(server)
+            .delete('/entries/1')
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(401);
+                expect(res.text).to.deep.equal('Invalid token');
+                done();
+            });
+        });
 
+        it('should return 400 if route param is not numeric', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .delete('/entries/hello')
+            .set('Authorization', 'Bearer ' + token)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                done();
+            });
+        });
+
+        it('should return 400 if the current user does not exist', function(done) {
+            const token = jwt.sign({username:'i do not exist'}, jwtSecret);
+            chai.request(server)
+            .delete('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newTitle: 'dean1 note 1', newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(400);
+                expect(res.text).to.deep.equal('Current user does not exist');
+                done();
+            });
+        });
+
+        it('should return 404 if the entry to delete does not exist', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .delete('/entries/100')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newTitle: 'dean1 note 1', newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(404);
+                expect(res.text).to.deep.equal('Entry does not exist');
+                done();
+            });
+        });
+
+        it('should return 403 if user does not own the note', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .delete('/entries/3')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newTitle: 'dean1 note 1', newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(403);
+                expect(res.text).to.deep.equal('You do not have access to this entry');
+                done();
+            });
+        });
+
+        it('should delete the note', function(done) {
+            const token = jwt.sign({username:'dean1'}, jwtSecret);
+            chai.request(server)
+            .delete('/entries/1')
+            .set('Authorization', 'Bearer ' + token)
+            .send({newTitle: 'dean1 note 1', newContent: ''})
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(204);
+                
+                chai.request(server)
+                .get('/entries')
+                .set('Authorization', 'Bearer ' + token)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.matchPattern({
+                        count: 1,
+                        user: 'dean1',
+                        entries: [
+                            {
+                                id: 2,
+                                title: 'dean1 note 2',
+                                updatedAt: lm.isString
+                            }
+                        ]
+                    });
+                    done();
+                });
+            });
+        });
     });
 });
