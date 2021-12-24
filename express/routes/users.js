@@ -23,9 +23,7 @@ const jwtSecret = process.env.JWT_SECRET;
  *        content: 
  *          application/json:
  *            schema: 
- *              type: array
- *              items: 
- *                type: string  
+ *              $ref: '#/components/schemas/ArrayOfUsernames'
  */
 router.get('/', async function(req, res, next) {
     try {
@@ -43,6 +41,7 @@ router.get('/', async function(req, res, next) {
  * /users/:
  *  delete: 
  *    summary: Delete the signed-in user and all their data
+ *    description: Deletes an existing user given a valid JWT token; also deletes all of the user's data.
  *    tags: 
  *      - users
  *    security: 
@@ -50,10 +49,10 @@ router.get('/', async function(req, res, next) {
  *    responses: 
  *      204: 
  *        description: The user and their data have been deleted
- *      200: 
+ *      400: 
  *        description: The signed-in user does not exist 
  *      401: 
- *        description: The JWT token is missing or invalid
+ *        $ref: '#/components/responses/UnauthorizedError'
  */
 router.delete('/', 
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
@@ -81,7 +80,42 @@ async function(req, res, next) {
     }
 });
 
-/** POST a new user and generate a new JWT. */
+/**
+ * @swagger
+ * /users/signup:
+ *  post:
+ *    summary: Sign up as a new user
+ *    description: Creates a new user account with the given username/password combination; returns a new JWT token upon success.
+ *    tags: 
+ *      - users
+ *    requestBody:
+ *          required: true
+ *          content: 
+ *            application/json:
+ *              schema: 
+ *                $ref: '#/components/schemas/UsernamePassword'
+ *    responses:
+ *      201: 
+ *        description: Created
+ *        content:
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/schemas/JWTToken'
+ *      400: 
+ *        description: Malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/schemas/MalformedRequest'
+ *      409: 
+ *        description: Username already exists
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              type: string
+ *              example: 'Username already exists'
+ *        
+ */
 router.post('/signup', 
 body('username').isString().bail().notEmpty().trim().escape(),
 body('password').isString().bail().notEmpty().trim().escape(),
@@ -111,7 +145,48 @@ async function(req, res, next) {
     }
 });
 
-/** POST (generate and return) a JWT for an existing user. */
+/**
+ * @swagger
+ * /users/signin:
+ *  post:
+ *    summary: Sign in as an existing user
+ *    description: Signs-in as an existing user with the given username/password combination; returns a new JWT token upon success.
+ *    tags: 
+ *      - users
+ *    requestBody:
+ *          required: true
+ *          content: 
+ *            application/json:
+ *              schema: 
+ *                $ref: '#/components/schemas/UsernamePassword'
+ *    responses:
+ *      200: 
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/schemas/JWTToken'
+ *      400: 
+ *        description: Malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/schemas/MalformedRequest'
+ *      403: 
+ *        description: Incorrect password
+ *        content:
+ *          application/json:
+ *            schema: 
+ *              type: string
+ *              example: 'Incorrect password'
+ *      404: 
+ *        description: User not found
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              type: string
+ *              example: 'User not found'       
+ */
 router.post('/signin', 
 body('username').isString().bail().notEmpty().trim().escape(),
 body('password').isString().bail().notEmpty().trim().escape(),

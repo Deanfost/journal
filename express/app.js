@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUI = require('swagger-ui-express');
+var swaggerDefinition = require('./swaggerDefn');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -25,28 +26,10 @@ app.use('/users', usersRouter);
 app.use('/entries', entryRouter);
 app.use('/health', systemRouter);
 
-var swaggerOptions = {
-    swaggerDefinition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'Journal API',
-            description: 'A (very) simple journaling API.',
-            contact: {
-                name: 'Dean Foster',
-                email: 'Deanfoster45@gmail.com'
-            }
-        },
-        servers: [
-            {
-                url: 'http://localhost:5050', 
-                description: 'Development server'
-            }
-        ]
-    },
+const swaggerDocs = swaggerJsDoc({
+    swaggerDefinition,
     apis: ['./routes/*.js']
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
+});
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Catch a JWT verification error
