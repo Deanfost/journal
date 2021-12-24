@@ -1,6 +1,9 @@
 # journal
 A simple journalling REST API.
 
+## API Docs
+This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to `localhost:5050/docs`. 
+
 ## Backend
 To set up the Express backend, run `npm i` in `/express`. To start the Express backend on localhost:5050, run `npm start`. 
 
