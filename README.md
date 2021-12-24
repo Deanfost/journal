@@ -2,7 +2,7 @@
 A simple journalling REST API.
 
 ## API Docs
-This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to `localhost:5050/docs`. 
+This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to localhost:5050/docs. 
 
 ## Backend
 To set up the Express backend, run `npm i` in `/express`, and follow the steps in the following section. To start the Express backend on localhost:5050, run `npm start`. 
@@ -28,7 +28,7 @@ Within the `/express` dir:
 Note: the seed command will not reset auto-incrementing columns
 
 ## Serving a Frontend
-The backend is capable of serving a production build of a frontend. To serve it, modify the `express.static()` call in `express/app.js` to point to your production build folder. In addition, ensure that `res.render()` within `/express/routes/index.js` points to the entry point of your build (check your framework's documentation). It will then be served on `localhost:5050/`.
+The backend is capable of serving a production build of a frontend. To serve it, modify the `express.static()` call in `express/app.js` to point to your production build folder. In addition, ensure that `res.render()` within `/express/routes/index.js` points to the entry point of your build (check your framework's documentation). It will then be served on localhost:5050/.
 
 ## Starting Up the Postgres Container
 Ensure that Docker and Docker Compose are installed on your machine. Run `docker compose up` in the root of the project to start the container on localhost:5432.
