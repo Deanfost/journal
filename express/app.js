@@ -36,13 +36,18 @@ var swaggerOptions = {
                 email: 'Deanfoster45@gmail.com'
             }
         },
-        servers: ['http://localhost:5050']
+        servers: [
+            {
+                url: 'http://localhost:5050', 
+                description: 'Development server'
+            }
+        ]
     },
     apis: ['./routes/*.js']
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Catch a JWT verification error
 app.use(function(err, req, res, next) {
