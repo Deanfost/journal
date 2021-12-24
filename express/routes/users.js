@@ -16,7 +16,7 @@ const jwtSecret = process.env.JWT_SECRET;
  *  get: 
  *    summary: Get a list of registered usernames
  *    tags: 
- *      - users
+ *      - Users
  *    responses: 
  *      200: 
  *        description: A successful response
@@ -43,7 +43,7 @@ router.get('/', async function(req, res, next) {
  *    summary: Delete the signed-in user and all their data
  *    description: Deletes an existing user given a valid JWT token; also deletes all of the user's data.
  *    tags: 
- *      - users
+ *      - Users
  *    security: 
  *      - bearerAuth: []
  *    responses: 
@@ -87,7 +87,7 @@ async function(req, res, next) {
  *    summary: Sign up as a new user
  *    description: Creates a new user account with the given username/password combination; returns a new JWT token upon success.
  *    tags: 
- *      - users
+ *      - Users
  *    requestBody:
  *          required: true
  *          content: 
@@ -152,7 +152,7 @@ async function(req, res, next) {
  *    summary: Sign in as an existing user
  *    description: Signs-in as an existing user with the given username/password combination; returns a new JWT token upon success.
  *    tags: 
- *      - users
+ *      - Users
  *    requestBody:
  *          required: true
  *          content: 

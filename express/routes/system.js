@@ -7,7 +7,7 @@ var router = express.Router();
  *  get: 
  *    summary: Perform a healthcheck on the server
  *    tags: 
- *      - system
+ *      - System
  *    responses: 
  *      200: 
  *        description: The server is healthy

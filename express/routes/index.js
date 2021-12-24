@@ -7,7 +7,7 @@ var router = express.Router();
  *  get: 
  *    summary: View the web app (if one is provided)
  *    tags: 
- *      - frontend
+ *      - Frontend
  *    produces: 
  *      - text/html
  *    responses: 

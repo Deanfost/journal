@@ -61,7 +61,7 @@ module.exports = {
                 }
             }
         },
-        securitySchemas: {
+        securitySchemes: {
             bearerAuth: {
                 type: 'http',
                 scheme: 'bearer',
