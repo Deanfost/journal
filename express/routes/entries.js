@@ -13,7 +13,7 @@ router.use(verifyJwt({secret: jwtSecret, algorithms: ['HS256']}));
 
 /**
  * @swagger
- * /entries/:
+ * /entries:
  *  get: 
  *    summary: Get a list of the user's entries
  *    description: Returns an index of the signed-in user's entries.
@@ -92,7 +92,7 @@ async function(req, res, next) {
 
 /**
  * @swagger
- * /entries/:
+ * /entries:
  *  post: 
  *    summary: Create a new journal entry
  *    description: Creates a new journal entry for the signed-in user. 
@@ -101,11 +101,11 @@ async function(req, res, next) {
  *    security: 
  *      - bearerAuth: []
  *    requestBody:
- *        required: true
- *        content: 
- *          application/json:
- *            schema: 
- *              $ref: '#/components/schemas/NewNote'
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema: 
+ *            $ref: '#/components/schemas/NewNote'
  *    responses: 
  *      201: 
  *        description: OK

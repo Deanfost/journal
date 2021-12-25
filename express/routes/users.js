@@ -12,7 +12,7 @@ const jwtSecret = process.env.JWT_SECRET;
 
 /**
  * @swagger
- * /users/:
+ * /users:
  *  get: 
  *    summary: Get a list of registered usernames
  *    tags: 
@@ -38,7 +38,7 @@ router.get('/', async function(req, res, next) {
 
 /**
  * @swagger
- * /users/:
+ * /users:
  *  delete: 
  *    summary: Delete the signed-in user and all their data
  *    description: Deletes an existing user given a valid JWT token; also deletes all of the user's data.
@@ -114,11 +114,11 @@ async function(req, res, next) {
  *    tags: 
  *      - Users
  *    requestBody:
- *          required: true
- *          content: 
- *            application/json:
- *              schema: 
- *                $ref: '#/components/schemas/UsernamePassword'
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema: 
+ *            $ref: '#/components/schemas/UsernamePassword'
  *    responses:
  *      201: 
  *        description: OK
@@ -195,11 +195,11 @@ async function(req, res, next) {
  *    tags: 
  *      - Users
  *    requestBody:
- *          required: true
- *          content: 
- *            application/json:
- *              schema: 
- *                $ref: '#/components/schemas/UsernamePassword'
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema: 
+ *            $ref: '#/components/schemas/UsernamePassword'
  *    responses:
  *      200: 
  *        description: OK
