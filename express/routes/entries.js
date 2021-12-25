@@ -11,7 +11,36 @@ const jwtSecret = process.env.JWT_SECRET;
 // Protect all endpoints in this router with JWT
 router.use(verifyJwt({secret: jwtSecret, algorithms: ['HS256']}));
 
-/** GET a list of entries for a user. */
+/**
+ * @swagger
+ * /entries/:
+ *  get: 
+ *    summary: Get a list of the user's entries
+ *    description: Returns an index of the signed-in user's entries.
+ *    tags: 
+ *      - Entries
+ *    security: 
+ *      - bearerAuth: []
+ *    responses: 
+ *      200: 
+ *        description: OK
+ *        content: 
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/responses/EntryIndex'
+ *      400: 
+ *        description: The signed-in user does not exist 
+ *        content:
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/responses/CurrentUserDNEError'
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/responses/UnauthorizedError'
+ */
 router.get('/', 
 async function(req, res, next) {
     const usernameJwt = req.user['username'];
@@ -44,7 +73,38 @@ async function(req, res, next) {
     }
 });
 
-/** POST a new entry. */
+/**
+ * @swagger
+ * /entries/:
+ *  post: 
+ *    summary: Create a new journal entry.
+ *    description: Creates a new journal entry for the signed-in user. 
+ *    tags: 
+ *      - Entries
+ *    security: 
+ *      - bearerAuth: []
+ *    responses: 
+ *      201: 
+ *        description: OK
+ *        content: 
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/responses/EntryIndex'
+ *      400: 
+ *        description: The signed-in user does not exist, or malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              oneOf:
+ *                - $ref: '#/components/responses/CurrentUserDNEError'
+ *                - $ref: '#/components/responses/MalformedRequestError'
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/responses/UnauthorizedError'
+ */
 router.post('/', 
 body('title').isString().bail().notEmpty().escape(),
 body('content').isString().bail().escape(),

@@ -16,6 +16,28 @@ module.exports = {
     ],
     components: {
         schemas: {
+            UsernamePassword: {
+                type: 'object',
+                properties: {
+                    username: {
+                        type: 'string',
+                        example: 'Dean'
+                    },
+                    password: {
+                        type: 'string',
+                        example: 'Dean'
+                    }
+                }
+            }
+        },
+        securitySchemes: {
+            bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT'
+            }
+        },
+        responses: {
             ArrayOfUsernames: {
                 type: 'array',
                 items: {
@@ -27,20 +49,44 @@ module.exports = {
                 type: 'string',
                 example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
             },
-            UsernamePassword: {
-                type: 'object',
+            EntryIndexItem: {
+                type: 'object', 
                 properties: {
-                    username: {
-                        type: 'string',
-                        example: 'dean'
+                    id: {
+                        type: 'number',
+                        example: 1
                     },
-                    password: {
+                    title: {
                         type: 'string',
-                        example: '1234'
+                        example: 'My First Note',
+                    },
+                    updatedAt: {
+                        type: 'string', 
+                        example: '2021-03-14T00:00:00.000Z',
+                        description: 'Timestamp with time zone (timestamptz) representing when the note was last modified.'
                     }
                 }
             },
-            MalformedRequest: {
+            EntryIndex: {
+                type: 'object',
+                properties: {
+                    count: {
+                        type: 'number', 
+                        example: 1
+                    },
+                    user: {
+                        type: 'string',
+                        example: 'dean',
+                    },
+                    entries: {
+                        type: 'array',
+                        items: {
+                            $ref: '#/components/responses/EntryIndexItem'
+                        }
+                    }
+                }
+            },
+            MalformedRequestError: {
                 type: 'array',
                 items: {
                     type: 'object',
@@ -59,18 +105,14 @@ module.exports = {
                         }
                     }
                 }
-            }
-        },
-        securitySchemes: {
-            bearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT'
-            }
-        },
-        responses: {
+            },
             UnauthorizedError: {
-                description: 'The JWT token is missing or invalid'
+                type: 'string',
+                example: 'Invalid token'
+            },
+            CurrentUserDNEError: {
+                type: 'string',
+                example: 'The current user does not exist'
             }
         }
     }

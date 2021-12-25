@@ -19,11 +19,11 @@ const jwtSecret = process.env.JWT_SECRET;
  *      - Users
  *    responses: 
  *      200: 
- *        description: A successful response
+ *        description: OK
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/schemas/ArrayOfUsernames'
+ *              $ref: '#/components/responses/ArrayOfUsernames'
  */
 router.get('/', async function(req, res, next) {
     try {
@@ -48,11 +48,19 @@ router.get('/', async function(req, res, next) {
  *      - bearerAuth: []
  *    responses: 
  *      204: 
- *        description: The user and their data have been deleted
+ *        description: OK
  *      400: 
- *        description: The signed-in user does not exist 
+ *        description: The current user does not exist
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/responses/CurrentUserDNEError'
  *      401: 
- *        $ref: '#/components/responses/UnauthorizedError'
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/responses/UnauthorizedError'
  */
 router.delete('/', 
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
@@ -96,17 +104,17 @@ async function(req, res, next) {
  *                $ref: '#/components/schemas/UsernamePassword'
  *    responses:
  *      201: 
- *        description: Created
+ *        description: OK
  *        content:
  *          application/json:
  *            schema: 
- *              $ref: '#/components/schemas/JWTToken'
+ *              $ref: '#/components/responses/JWTToken'
  *      400: 
  *        description: Malformed request
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/schemas/MalformedRequest'
+ *              $ref: '#/components/responses/MalformedRequestError'
  *      409: 
  *        description: Username already exists
  *        content: 
@@ -165,13 +173,13 @@ async function(req, res, next) {
  *        content:
  *          application/json:
  *            schema: 
- *              $ref: '#/components/schemas/JWTToken'
+ *              $ref: '#/components/responses/JWTToken'
  *      400: 
  *        description: Malformed request
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/schemas/MalformedRequest'
+ *              $ref: '#/components/responses/MalformedRequestError'
  *      403: 
  *        description: Incorrect password
  *        content:
