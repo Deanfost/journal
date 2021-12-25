@@ -3,7 +3,7 @@ var bcrypt = require('bcrypt');
 var { body } = require('express-validator');
 var jwt = require('jsonwebtoken');
 var verifyJwt = require('express-jwt');
-var { handleValidationResult } = require('../util');
+var { handleValidationResult, WrappedErrorResponse, httpMessages } = require('../util');
 
 var router = express.Router();
 
@@ -73,7 +73,8 @@ async function(req, res, next) {
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
         
         // Delete the user
@@ -146,7 +147,8 @@ async function(req, res, next) {
     } catch (err) {
         // Catch unique violations
         if (err.name === "SequelizeUniqueConstraintError") {
-            res.status(409).send('Username already exists')
+            var resp = new WrappedErrorResponse(409, httpMessages.USER_CONFLICT);
+            res.status(409).json(resp);
             return;
         }
         next(err);
@@ -204,11 +206,17 @@ async function(req, res, next) {
     try {
         // Get the user info
         const user = await User.findByPk(username);
-        if (!user) return res.status(404).send('User not found');
+        if (!user) {
+            var resp = new WrappedErrorResponse(404, httpMessages.USERNAME_NOT_FOUND);
+            return res.status(404).json(resp);
+        }
         
         // Check password hash
         const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(403).send('Incorrect password');
+        if (!match) {
+            var resp = new WrappedErrorResponse(403, httpMessages.INCORRECT_PASSWORD);
+            return res.status(403).json(resp);
+        }
         
         // Send new JWT
         const token = jwt.sign({username}, jwtSecret, {

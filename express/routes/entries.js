@@ -1,7 +1,7 @@
 var express = require('express');
 var verifyJwt = require('express-jwt');
 var { body, param } = require('express-validator');
-var { handleValidationResult } = require('../util');
+var { handleValidationResult, httpMessages, WrappedErrorResponse } = require('../util');
 
 var router = express.Router();
 
@@ -46,11 +46,12 @@ async function(req, res, next) {
     const usernameJwt = req.user['username'];
     const t = await sequelize.transaction();
     try {
-        // Check user exists
+        // Check current user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
 
         // Lazy load user's entry index
@@ -115,11 +116,12 @@ async function(req, res, next) {
     const usernameJwt = req.user['username'];
     const t = await sequelize.transaction();
     try {
-        // Check user exists
+        // Check current user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
 
         // Create new journal entry for this user
@@ -146,18 +148,20 @@ async function(req, res, next) {
     const entryid = req.params.entryid;
     const t = await sequelize.transaction();
     try {
-        // Check user exists
+        // Check current user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
 
         // Lazy load entry content
         const entry = await Note.findByPk(entryid, {transaction: t});
         if (!entry) {
             await t.rollback();
-            return res.status(404).send('Entry does not exist');
+            var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+            return res.status(404).json(resp);
         }
 
         // Check access to entry
@@ -165,7 +169,8 @@ async function(req, res, next) {
         // showing up missing above is not confused for having no access to it)
         if (entry.username !== usernameJwt) {
             await t.rollback();
-            return res.status(403).send('You do not have access to this entry');
+            var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+            return res.status(403).json(resp);
         }
 
         // Commit and send
@@ -190,18 +195,20 @@ async function(req, res, next) {
     const newContent = req.body.newContent;
     const t = await sequelize.transaction();
     try {
-        // Check user exists
+        // Check current user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
 
         // Get entry
         const entry = await Note.findByPk(entryid, {transaction: t});
         if (!entry) {
             await t.rollback();
-            return res.status(404).send('Entry does not exist');
+            var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+            return res.status(404).json(resp);
         }
 
         // Check access to entry
@@ -209,7 +216,8 @@ async function(req, res, next) {
         // showing up missing above is not confused for having no access to it)
         if (entry.username !== usernameJwt) {
             await t.rollback();
-            return res.status(403).send('You do not have access to this entry');
+            var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+            return res.status(403).json(resp);
         }
 
         // Update the journal entry
@@ -235,18 +243,20 @@ async function(req, res, next) {
     const entryid = req.params.entryid;
     const t = await sequelize.transaction();
     try {
-        // Check user exists
+        // Check current user exists
         const user = await User.findByPk(usernameJwt, {transaction: t});
         if (!user) {
             await t.rollback();
-            return res.status(400).send('Current user does not exist');
+            var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+            return res.status(400).json(resp);
         }
 
         // Get entry
         const entry = await Note.findByPk(entryid, {transaction: t});
         if (!entry) {
             await t.rollback();
-            return res.status(404).send('Entry does not exist');
+            var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+            return res.status(404).json(resp);
         }
 
         // Check access to entry
@@ -254,7 +264,8 @@ async function(req, res, next) {
         // showing up missing above is not confused for having no access to it)
         if (entry.username !== usernameJwt) {
             await t.rollback();
-            return res.status(403).send('You do not have access to this entry');
+            var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+            return res.status(403).json(resp);
         }
 
         // Delete the journal entry

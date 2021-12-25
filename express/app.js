@@ -5,6 +5,7 @@ var logger = require('morgan');
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUI = require('swagger-ui-express');
 var swaggerDefinition = require('./swaggerDefn');
+var { httpMessages, WrappedErrorResponse } = require('./util');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -36,7 +37,8 @@ app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.use(function(err, req, res, next) {
     if (err.name == 'UnauthorizedError') {
         // Invalid JWT
-        return res.status(401).send('Invalid token');
+        var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+        return res.status(401).json(resp);
     }
     console.error(err);
     next(err);
