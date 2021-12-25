@@ -1,3 +1,5 @@
+const { httpMessages } = require('./util');
+
 module.exports = {
     openapi: '3.0.0',
     info: {
@@ -87,33 +89,115 @@ module.exports = {
                 }
             },
             MalformedRequestError: {
-                type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        location: {
-                            type: 'string',
-                            description: 'Which part of the request is malformed'
-                        },
-                        msg: {
-                            type: 'string',
-                            description: 'Summary of the error'
-                        },
-                        param: {
-                            type: 'string',
-                            description: 'The offending param of the request'
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 400
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.MALFORMED_REQUEST
+                    },
+                    details: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                location: {
+                                    type: 'string',
+                                    description: 'Which part of the request is malformed'
+                                },
+                                msg: {
+                                    type: 'string',
+                                    description: 'Summary of the error'
+                                },
+                                param: {
+                                    type: 'string',
+                                    description: 'The offending param of the request'
+                                }
+                            }
                         }
                     }
                 }
             },
             UnauthorizedError: {
-                type: 'string',
-                example: 'Invalid token'
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 401
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.INVALID_TOKEN
+                    }
+                }
             },
             CurrentUserDNEError: {
-                type: 'string',
-                example: 'The current user does not exist'
-            }
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 400
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.EXPIRED_USER
+                    }
+                }
+            }, 
+            UserConflictError: {
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 409
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.USER_CONFLICT
+                    }
+                }
+            },
+            IncorrectPasswordError: {
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 409
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.USER_CONFLICT
+                    }
+                }
+            },
+            UserNotFoundError: {
+                type: 'object',
+                properties: {
+                    code: {
+                        type: 'number',
+                        description: 'HTTP error code',
+                        example: 404
+                    },
+                    msg: {
+                        type: 'string',
+                        description: 'Summary of error',
+                        example: httpMessages.USERNAME_NOT_FOUND
+                    }
+                }
+            },
         }
     }
 };

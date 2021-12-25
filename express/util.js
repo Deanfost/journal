@@ -2,18 +2,19 @@ var { validationResult } = require('express-validator');
 var bcrypt = require('bcrypt');
 
 class WrappedErrorResponse {
-    constructor(code, msg, details = null) {
+    constructor(code, msg, details = undefined) {
         this.code = code;
         this.msg = msg;
         this.details = details;
     }
     
     toJSON() {
-        return {
+        var ret = {
             code: this.code,
-            msg: this.msg,
-            details: this.details
+            msg: this.msg
         };
+        if (this.details) ret.details = this.details;
+        return ret;
     }
 }
 

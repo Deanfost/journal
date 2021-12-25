@@ -121,9 +121,7 @@ async function(req, res, next) {
  *        content: 
  *          application/json:
  *            schema: 
- *              type: string
- *              example: 'Username already exists'
- *        
+ *              $ref: '#/components/responses/UserConflictError'
  */
 router.post('/signup', 
 body('username').isString().bail().notEmpty().trim().escape(),
@@ -187,15 +185,13 @@ async function(req, res, next) {
  *        content:
  *          application/json:
  *            schema: 
- *              type: string
- *              example: 'Incorrect password'
+ *              $ref: '#/components/responses/IncorrectPasswordError'
  *      404: 
  *        description: User not found
  *        content: 
  *          application/json:
  *            schema: 
- *              type: string
- *              example: 'User not found'       
+ *              $ref: '#/components/responses/UserNotFoundError'
  */
 router.post('/signin', 
 body('username').isString().bail().notEmpty().trim().escape(),
