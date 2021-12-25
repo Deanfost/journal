@@ -94,7 +94,7 @@ async function(req, res, next) {
  * @swagger
  * /entries/:
  *  post: 
- *    summary: Create a new journal entry.
+ *    summary: Create a new journal entry
  *    description: Creates a new journal entry for the signed-in user. 
  *    tags: 
  *      - Entries
@@ -114,7 +114,7 @@ async function(req, res, next) {
  *            schema:
  *              $ref: '#/components/responses/FullEntry'
  *      400: 
- *        description: The signed-in user does not exist, or malformed request
+ *        description: The signed-in user does not exist OR malformed request
  *        content: 
  *          application/json:
  *            schema: 
@@ -186,7 +186,98 @@ async function(req, res, next) {
     }
 });
 
-/** GET an existing entry's content. */
+/**
+ * @swagger
+ * /entries/{entryid}:
+ *  get: 
+ *    summary: Get an existing journal entry
+ *    description: Retrieves an existing journal entry for the signed-in user. 
+ *    tags: 
+ *      - Entries
+ *    security: 
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: entryid
+ *        schema: 
+ *          type: integer
+ *        required: true
+ *        description: Numeric ID of the entry
+ *    responses: 
+ *      200: 
+ *        description: OK
+ *        content: 
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/responses/FullEntry'
+ *      400: 
+ *        description: The signed-in user does not exist OR malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              oneOf:
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: 
+ *                          $ref: '#/components/responses/EXPIRED_USER'
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: Malformed request
+ *                      details:
+ *                        $ref: '#/components/responses/ValidatorErrors'
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
+ *      403: 
+ *        description: The user does not own the entry
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 403
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NO_ACCESS'
+ *      404: 
+ *        description: The entry could not be found
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 404
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NOT_FOUND'
+ */
 router.get('/:entryid', 
 param('entryid').isNumeric(),
 handleValidationResult,
@@ -229,7 +320,104 @@ async function(req, res, next) {
     }
 });
 
-/** PUT (replace with a new version) an existing entry. */
+/**
+ * @swagger
+ * /entries/{entryid}:
+ *  put: 
+ *    summary: Update an existing journal entry
+ *    description: Updates an existing journal entry (title and content) for the signed-in user. Automatically notes entry's update time.
+ *    tags: 
+ *      - Entries
+ *    security: 
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: entryid
+ *        schema: 
+ *          type: integer
+ *        required: true
+ *        description: Numeric ID of the entry
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema: 
+ *            $ref: '#/components/schemas/NoteUpdate'
+ *    responses: 
+ *      200: 
+ *        description: OK
+ *        content: 
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/responses/FullEntry'
+ *      400: 
+ *        description: The signed-in user does not exist OR malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              oneOf:
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: 
+ *                          $ref: '#/components/responses/EXPIRED_USER'
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: Malformed request
+ *                      details:
+ *                        $ref: '#/components/responses/ValidatorErrors'
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
+ *      403: 
+ *        description: The user does not own the entry
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 403
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NO_ACCESS'
+ *      404: 
+ *        description: The entry could not be found
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 404
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NOT_FOUND'
+ */
 router.put('/:entryid', 
 param('entryid').isNumeric(),
 body('newTitle').isString().bail().escape(),
@@ -281,7 +469,94 @@ async function(req, res, next) {
     }
 });
 
-/** DELETE an entry. */
+/**
+ * @swagger
+ * /entries/{entryid}:
+ *  delete: 
+ *    summary: Delete an existing journal entry
+ *    description: Deletes an existing journal entry for the signed-in user. 
+ *    tags: 
+ *      - Entries
+ *    security: 
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: entryid
+ *        schema: 
+ *          type: integer
+ *        required: true
+ *        description: Numeric ID of the entry
+ *    responses: 
+ *      204: 
+ *        description: OK
+ *      400: 
+ *        description: The signed-in user does not exist OR malformed request
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              oneOf:
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: 
+ *                          $ref: '#/components/responses/EXPIRED_USER'
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: Malformed request
+ *                      details:
+ *                        $ref: '#/components/responses/ValidatorErrors'
+ *      401: 
+ *        description: The JWT token is missing or invalid
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
+ *      403: 
+ *        description: The user does not own the entry
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 403
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NO_ACCESS'
+ *      404: 
+ *        description: The entry could not be found
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 404
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/ENTRY_NOT_FOUND'
+ */
 router.delete('/:entryid', 
 param('entryid').isNumeric(),
 handleValidationResult,

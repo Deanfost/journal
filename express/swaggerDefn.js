@@ -43,6 +43,19 @@ module.exports = {
                         example: 'This is content...'
                     }
                 }
+            },
+            NoteUpdate: {
+                type: 'object',
+                properties: {
+                    newTitle: {
+                        type: 'string',
+                        example: 'My Note Update'
+                    },
+                    newContent: {
+                        type: 'string',
+                        example: 'This is new content...'
+                    }
+                }
             }
         },
         securitySchemes: {
@@ -126,6 +139,11 @@ module.exports = {
                         type: 'string', 
                         example: '2021-03-14T00:00:00.000Z',
                         description: 'Timestamp with time zone (timestamptz) representing when the note was created'
+                    },
+                    username: {
+                        type: 'string',
+                        example: 'Dean',
+                        description: 'The user that this entry belongs to'
                     }
                 }
             },
