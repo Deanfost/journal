@@ -8,7 +8,7 @@ This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access 
 To set up the Express backend, run `npm i` in `/express`, and follow the steps in the following section. To start the Express backend on localhost:5050, run `npm start`. 
 
 ### Env Vars Setup
-All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level `.env` file. Environment variables:
+All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level (outside of `/express`) `.env` file. Environment variables:
 - `POSTGRES_USER`- initialize the Postgres container's user account
 - `POSTGRES_PASSWORD` - initialize the Postgres container's password
 - `POSTGRES_URI` - useful for connecting to the container with the PSQL shell (not required)
