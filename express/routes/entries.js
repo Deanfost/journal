@@ -33,13 +33,29 @@ router.use(verifyJwt({secret: jwtSecret, algorithms: ['HS256']}));
  *        content:
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/CurrentUserDNEError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 400
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/EXPIRED_USER'
  *      401: 
  *        description: The JWT token is missing or invalid
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/UnauthorizedError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
  */
 router.get('/', 
 async function(req, res, next) {
@@ -84,27 +100,58 @@ async function(req, res, next) {
  *      - Entries
  *    security: 
  *      - bearerAuth: []
+ *    requestBody:
+ *        required: true
+ *        content: 
+ *          application/json:
+ *            schema: 
+ *              $ref: '#/components/schemas/NewNote'
  *    responses: 
  *      201: 
  *        description: OK
  *        content: 
  *          application/json:
  *            schema:
- *              $ref: '#/components/responses/EntryIndex'
+ *              $ref: '#/components/responses/FullEntry'
  *      400: 
  *        description: The signed-in user does not exist, or malformed request
  *        content: 
  *          application/json:
  *            schema: 
  *              oneOf:
- *                - $ref: '#/components/responses/CurrentUserDNEError'
- *                - $ref: '#/components/responses/MalformedRequestError'
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: 
+ *                          $ref: '#/components/responses/EXPIRED_USER'
+ *                - allOf:
+ *                  - $ref: '#/components/responses/WrappedErrorResponse'
+ *                  - type: object
+ *                    properties:
+ *                      code: 
+ *                        example: 400
+ *                      msg: 
+ *                        example: Malformed request
+ *                      details:
+ *                        $ref: '#/components/responses/ValidatorErrors'
  *      401: 
  *        description: The JWT token is missing or invalid
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/UnauthorizedError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
  */
 router.post('/', 
 body('title').isString().bail().notEmpty().escape(),

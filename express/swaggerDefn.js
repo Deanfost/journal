@@ -30,6 +30,19 @@ module.exports = {
                         example: 'Dean'
                     }
                 }
+            },
+            NewNote: {
+                type: 'object',
+                properties: {
+                    title: {
+                        type: 'string',
+                        example: 'My New Note'
+                    },
+                    content: {
+                        type: 'string',
+                        example: 'This is content...'
+                    }
+                }
             }
         },
         securitySchemes: {
@@ -40,6 +53,7 @@ module.exports = {
             }
         },
         responses: {
+            ...httpMessages,
             ArrayOfUsernames: {
                 type: 'array',
                 items: {
@@ -88,116 +102,66 @@ module.exports = {
                     }
                 }
             },
-            MalformedRequestError: {
+            FullEntry: {
                 type: 'object',
                 properties: {
-                    code: {
+                    id: {
                         type: 'number',
-                        description: 'HTTP error code',
-                        example: 400
+                        example: 1
                     },
-                    msg: {
+                    title: {
                         type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.MALFORMED_REQUEST
+                        example: 'My First Note',
                     },
-                    details: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-                                location: {
-                                    type: 'string',
-                                    description: 'Which part of the request is malformed'
-                                },
-                                msg: {
-                                    type: 'string',
-                                    description: 'Summary of the error'
-                                },
-                                param: {
-                                    type: 'string',
-                                    description: 'The offending param of the request'
-                                }
-                            }
+                    content: {
+                        type: 'string',
+                        example: 'This is content...'
+                    },
+                    updatedAt: {
+                        type: 'string', 
+                        example: '2021-03-14T00:00:00.000Z',
+                        description: 'Timestamp with time zone (timestamptz) representing when the note was last modified.'
+                    },
+                    createdAt: {
+                        type: 'string', 
+                        example: '2021-03-14T00:00:00.000Z',
+                        description: 'Timestamp with time zone (timestamptz) representing when the note was created'
+                    }
+                }
+            },
+            ValidatorErrors: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        location: {
+                            type: 'string',
+                            description: 'Which part of the request is malformed'
+                        },
+                        msg: {
+                            type: 'string',
+                            description: 'Summary of the error'
+                        },
+                        param: {
+                            type: 'string',
+                            description: 'The offending param of the request'
                         }
                     }
                 }
             },
-            UnauthorizedError: {
+            WrappedErrorResponse: {
                 type: 'object',
                 properties: {
                     code: {
                         type: 'number',
                         description: 'HTTP error code',
-                        example: 401
                     },
                     msg: {
                         type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.INVALID_TOKEN
+                        description: 'Summary of error'
                     }
                 }
-            },
-            CurrentUserDNEError: {
-                type: 'object',
-                properties: {
-                    code: {
-                        type: 'number',
-                        description: 'HTTP error code',
-                        example: 400
-                    },
-                    msg: {
-                        type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.EXPIRED_USER
-                    }
-                }
-            }, 
-            UserConflictError: {
-                type: 'object',
-                properties: {
-                    code: {
-                        type: 'number',
-                        description: 'HTTP error code',
-                        example: 409
-                    },
-                    msg: {
-                        type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.USER_CONFLICT
-                    }
-                }
-            },
-            IncorrectPasswordError: {
-                type: 'object',
-                properties: {
-                    code: {
-                        type: 'number',
-                        description: 'HTTP error code',
-                        example: 409
-                    },
-                    msg: {
-                        type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.USER_CONFLICT
-                    }
-                }
-            },
-            UserNotFoundError: {
-                type: 'object',
-                properties: {
-                    code: {
-                        type: 'number',
-                        description: 'HTTP error code',
-                        example: 404
-                    },
-                    msg: {
-                        type: 'string',
-                        description: 'Summary of error',
-                        example: httpMessages.USERNAME_NOT_FOUND
-                    }
-                }
-            },
+            }
         }
     }
 };

@@ -54,13 +54,29 @@ router.get('/', async function(req, res, next) {
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/CurrentUserDNEError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 400
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/EXPIRED_USER'
  *      401: 
  *        description: The JWT token is missing or invalid
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/UnauthorizedError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 401
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INVALID_TOKEN'
  */
 router.delete('/', 
 verifyJwt({secret: jwtSecret, algorithms: ['HS256']}),
@@ -115,13 +131,30 @@ async function(req, res, next) {
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/MalformedRequestError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 400
+ *                    msg: 
+ *                      example: Malformed request
+ *                    details:
+ *                      $ref: '#/components/responses/ValidatorErrors'
  *      409: 
  *        description: Username already exists
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/UserConflictError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 409
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/USER_CONFLICT'
  */
 router.post('/signup', 
 body('username').isString().bail().notEmpty().trim().escape(),
@@ -179,19 +212,44 @@ async function(req, res, next) {
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/MalformedRequestError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 400
+ *                    msg: 
+ *                      example: Malformed request
+ *                    details:
+ *                      $ref: '#/components/responses/ValidatorErrors'
  *      403: 
  *        description: Incorrect password
  *        content:
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/IncorrectPasswordError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 403
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/INCORRECT_PASSWORD'
  *      404: 
  *        description: User not found
  *        content: 
  *          application/json:
  *            schema: 
- *              $ref: '#/components/responses/UserNotFoundError'
+ *              allOf:
+ *                - $ref: '#/components/responses/WrappedErrorResponse'
+ *                - type: object
+ *                  properties:
+ *                    code: 
+ *                      example: 404
+ *                    msg: 
+ *                      example: 
+ *                        $ref: '#/components/responses/USERNAME_NOT_FOUND'
  */
 router.post('/signin', 
 body('username').isString().bail().notEmpty().trim().escape(),
