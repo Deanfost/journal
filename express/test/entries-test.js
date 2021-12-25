@@ -8,6 +8,7 @@ var bcrypt = require('bcrypt');
 var expect = chai.expect;
 var server = require('../app');
 var lm = chaiMatchPattern.getLodashModule();
+var { WrappedErrorResponse, httpMessages } = require('../util');
 
 chai.use(chaiHttp);
 chai.use(chaiMatchPattern);
@@ -77,7 +78,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -90,7 +92,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -141,7 +144,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -228,7 +232,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -278,7 +283,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -303,7 +309,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -316,7 +323,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(404);
-                expect(res.text).to.deep.equal('Entry does not exist');
+                var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -329,7 +337,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('You do not have access to this entry');
+                var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -362,7 +371,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -413,7 +423,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -427,7 +438,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(404);
-                expect(res.text).to.deep.equal('Entry does not exist');
+                var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -441,7 +453,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('You do not have access to this entry');
+                var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -491,7 +504,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -517,7 +531,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -531,7 +546,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(404);
-                expect(res.text).to.deep.equal('Entry does not exist');
+                var resp = new WrappedErrorResponse(404, httpMessages.ENTRY_NOT_FOUND);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -545,7 +561,8 @@ describe('Entries Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('You do not have access to this entry');
+                var resp = new WrappedErrorResponse(403, httpMessages.ENTRY_NO_ACCESS);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
