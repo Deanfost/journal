@@ -6,6 +6,7 @@ var chaiHttp = require('chai-http');
 var bcrypt = require('bcrypt');
 var expect = chai.expect;
 var server = require('../app');
+var { WrappedErrorResponse, httpMessages } = require('../util');
 
 chai.use(chaiHttp);
 
@@ -74,7 +75,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -88,7 +90,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(400);
-                expect(res.text).to.deep.equal('Current user does not exist');
+                var resp = new WrappedErrorResponse(400, httpMessages.EXPIRED_USER);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -225,7 +228,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(409);
-                expect(res.text).to.deep.equal('Username already exists');
+                var resp = new WrappedErrorResponse(409, httpMessages.USER_CONFLICT);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -357,7 +361,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(404);
-                expect(res.text).to.deep.equal('User not found');
+                var resp = new WrappedErrorResponse(404, httpMessages.USERNAME_NOT_FOUND);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -369,7 +374,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(403);
-                expect(res.text).to.deep.equal('Incorrect password');
+                var resp = new WrappedErrorResponse(403, httpMessages.INCORRECT_PASSWORD);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -420,7 +426,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
@@ -436,7 +443,8 @@ describe('Users Router', function() {
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(401);
-                expect(res.text).to.deep.equal('Invalid token');
+                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
+                expect(res.body).to.deep.equal(resp.toJSON());
                 done();
             });
         });
