@@ -36,11 +36,4 @@ Ensure that Docker and Docker Compose are installed on your machine. Run `docker
 On first start, run the first db management command above to initialize the db.
 
 ## Tests
-The backend includes both load test and unit test suites. 
-
-### Unit Tests
 To test the backend, run `npm test` within `/express`. All tests take place on db "db_test".
-
-### Load Tests (for fun)
-Load testing utilizes the Artillery package. First install artillery globally with `npm i -g artillery`. Then run a test suite in `/express/test/artillery` with `artillery run path/to/script.yml`. 
-
