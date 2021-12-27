@@ -1,5 +1,5 @@
 # journal
-A simple journalling REST API.
+A simple journalling REST API. The use of several concurrent devices with a single user account is not officially supported, and will lead to a poor user experience.
 
 ## API Docs
 This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to [localhost:5050/docs](http://localhost:5050/docs). 
