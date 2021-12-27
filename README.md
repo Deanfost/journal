@@ -1,11 +1,13 @@
 # journal
-A simple journalling REST API. The use of several concurrent devices with a single user account is not officially supported, and will lead to a poor user experience.
+A simple journalling REST API. Uses a Postgres container with Sequelize ORM. Endpoints are secured using JWT.
 
 ## API Docs
 This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to [localhost:5050/docs](http://localhost:5050/docs). 
 
 ## Backend
 To set up the Express backend, run `npm i` in `/express`, and follow the steps in the following section. To start the Express backend on localhost:5050, run `npm start`. 
+
+Being a very simple API, the use of several concurrent devices with a single user account is not officially supported.
 
 ### Env Vars Setup
 All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level (outside of `/express`) `.env` file. Environment variables:
