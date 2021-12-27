@@ -271,21 +271,6 @@ describe('Users Router', function() {
                 }
             });
         });
-
-        it('should return a JWT that expires at the correct time', function(done) {
-            const timestamp = Math.floor(new Date().getTime() / 1000);
-            const projectedExp = timestamp + process.env.JWT_DELTA_MINUTES * 60;
-            chai.request(server)
-            .post('/users/signup')
-            .send({username: 'not dean', password: '1234'})
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(201);
-                const exp = jwt.verify(res.text, jwtSecret).exp;
-                expect(exp >= projectedExp && exp <= projectedExp + 1).to.be.true;
-                done();
-            });
-        }); 
     });   
 
     describe('POST /signin', function() {
@@ -396,42 +381,9 @@ describe('Users Router', function() {
                 }
             });
         });
-
-        it('should return a JWT that expires at the correct time', function(done) {
-            const timestamp = Math.floor(new Date().getTime() / 1000);
-            const projectedExp = timestamp + process.env.JWT_DELTA_MINUTES * 60;
-            chai.request(server)
-            .post('/users/signin')
-            .send({username: 'dean1', password: '1234'})
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(200);
-                const exp = jwt.verify(res.text, jwtSecret).exp;
-                expect(exp >= projectedExp && exp <= projectedExp + 1).to.be.true;
-                done();
-            });
-        });
     });  
 
     describe('JWT Verification Util Handler', function() {
-        it('should return a 401 if the token has expired', function(done) {
-            const token = jwt.sign({
-                username: 'random user',
-                iat: Math.floor(new Date().getTime() / 1000) - 10
-            }, jwtSecret, {expiresIn: 0});
-            chai.request(server)
-            .del('/users')
-            .query({username: 'random user'})
-            .set('Authorization', 'Bearer ' + token)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(401);
-                var resp = new WrappedErrorResponse(401, httpMessages.INVALID_TOKEN);
-                expect(res.body).to.deep.equal(resp.toJSON());
-                done();
-            });
-        });
-
         it('should return 401 if the token has an invalid signature', function(done) {
             const token = jwt.sign({username: 'random user'}, 'wrongsecret', {
                 expiresIn: Math.floor(new Date().getTime() / 1000) + 1000

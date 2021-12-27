@@ -170,10 +170,8 @@ async function(req, res, next) {
         // Create record
         await User.create({username, password: digest});
 
-        // Send new JWT
-        const token = jwt.sign({username}, jwtSecret, {
-            expiresIn: process.env.JWT_DELTA_MINUTES * 60
-        });
+        // Send new JWT (never expires)
+        const token = jwt.sign({username}, jwtSecret);
         res.status(201).send(token);
     } catch (err) {
         // Catch unique violations
@@ -272,10 +270,8 @@ async function(req, res, next) {
             return res.status(403).json(resp);
         }
         
-        // Send new JWT
-        const token = jwt.sign({username}, jwtSecret, {
-            expiresIn: process.env.JWT_DELTA_MINUTES * 60
-        });
+        // Send new JWT (never expires)
+        const token = jwt.sign({username}, jwtSecret);
         res.send(token);
     } catch (err) {
         next(err);

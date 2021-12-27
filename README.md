@@ -1,5 +1,5 @@
 # journal
-A simple journalling REST API. Uses a Postgres container with Sequelize ORM. Endpoints are secured using JWT.
+A simple journalling REST API. Uses a Postgres container with Sequelize ORM. Endpoints are secured using JWT tokens (which do not expire, or support any sort of revoking mechanism).
 
 ## API Docs
 This server hosts API docs, courtesy of Swagger UI and Swagger-JSDoc. To access the documentation, start the server and go to [localhost:5050/docs](http://localhost:5050/docs). 
@@ -13,9 +13,8 @@ Being a very simple API, the use of several concurrent devices with a single use
 All environments vars referenced in the `docker-compose.yaml` and throughout express with `process.env` should be specified in a root-level (outside of `/express`) `.env` file. Environment variables:
 - `POSTGRES_USER`- initialize the Postgres container's user account
 - `POSTGRES_PASSWORD` - initialize the Postgres container's password
-- `POSTGRES_URI` - useful for connecting to the container with the PSQL shell (not required)
+- `POSTGRES_URI` - useful for connecting to the container with the PSQL shell (not required, only for dev convenience)
 - `JWT_SECRET` - used to sign JWTs
-- `JWT_DELTA_MINUTES` - set JWT expiration delta
 
 Notes: 
 - Changing the first two Postgres env vars will require the container to be re-created (`docker compose down` then `docker compose up` again)
